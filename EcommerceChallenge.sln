@@ -3,9 +3,46 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32228.430
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{F9AD45D5-3821-4FEE-8CC8-3186ACBD6677}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{2911FE51-E555-4204-974F-109D0E945AB1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ApiGateways", "ApiGateways", "{C04A5381-96D0-48E3-8114-F58676FD0B2A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Basket", "Basket", "{5FB8F5F4-785F-42E7-A696-6BE5117B5F36}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Catalog", "Catalog", "{2A289291-4824-4C88-944B-F4EA6777C353}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ordering", "Ordering", "{FA37A6CA-FD28-46C8-9576-C88361D1E2EE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B6CEBDFB-ED83-4F20-847F-53549C741148}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catalog.API", "Catalog.API\Catalog.API.csproj", "{9D65D914-066C-4C34-AA6D-DB1D937912F8}"
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9D65D914-066C-4C34-AA6D-DB1D937912F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D65D914-066C-4C34-AA6D-DB1D937912F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D65D914-066C-4C34-AA6D-DB1D937912F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D65D914-066C-4C34-AA6D-DB1D937912F8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2911FE51-E555-4204-974F-109D0E945AB1} = {F9AD45D5-3821-4FEE-8CC8-3186ACBD6677}
+		{C04A5381-96D0-48E3-8114-F58676FD0B2A} = {F9AD45D5-3821-4FEE-8CC8-3186ACBD6677}
+		{5FB8F5F4-785F-42E7-A696-6BE5117B5F36} = {2911FE51-E555-4204-974F-109D0E945AB1}
+		{2A289291-4824-4C88-944B-F4EA6777C353} = {2911FE51-E555-4204-974F-109D0E945AB1}
+		{FA37A6CA-FD28-46C8-9576-C88361D1E2EE} = {2911FE51-E555-4204-974F-109D0E945AB1}
+		{9D65D914-066C-4C34-AA6D-DB1D937912F8} = {2A289291-4824-4C88-944B-F4EA6777C353}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {46DB6F8D-3A12-49FD-A1E5-622C5C2C5D57}
