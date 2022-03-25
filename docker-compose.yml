@@ -1,0 +1,31 @@
+version: '3.4'
+
+services:
+  catalogdb:
+    image: mongo
+    ports:
+         - "27017:27017"
+    container_name: catalogdb
+    networks:
+      - dev
+
+  mongo_seed:
+    container_name: mongo-seed
+    build: ./Catalog.API/mongo-seed
+    links:
+      - catalogdb
+    networks:
+      - dev
+
+  catalog.api:
+    image: ${DOCKER_REGISTRY-}catalogapi
+    container_name: catalog.api
+    build:
+      context: .
+      dockerfile: Catalog.API/Dockerfile
+    networks:
+      - dev
+
+networks:
+   dev:
+     name: dev
