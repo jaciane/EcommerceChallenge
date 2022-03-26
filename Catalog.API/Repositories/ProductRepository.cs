@@ -14,7 +14,7 @@ namespace Catalog.API.Repositories
 
         async Task<IEnumerable<Product>> IProductRepository.GetProducts()
         {
-            return await _context.Products.Find(p=>true).ToListAsync();
+            return await _context.Products.Find(p=>p.Is_gift == false).ToListAsync();
         }
 
     }

@@ -7,11 +7,11 @@ namespace Catalog.API.Entities
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; }
+        public ObjectId Id { get; set; }
 
 
         [BsonElement("id")]
-        public string ? IdProduct { get; set; }
+        public int IdProduct { get; set; }
 
         [BsonElement("title")]
         public string ? Title { get; set; }
@@ -20,9 +20,9 @@ namespace Catalog.API.Entities
         public string ? Description { get; set; }
         
         [BsonElement("amount")]
-        public string? Amount { get; set; }
+        public double Amount { get; set; }
 
         [BsonElement("is_gift")]
-        public string ? Is_gift { get; set; }
+        public bool Is_gift { get; set; }
     }
 }
