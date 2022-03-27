@@ -11,3 +11,12 @@ services:
       - catalogdb
     ports:
       - "8080:80"
+
+  basket.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      #- "DatabaseSettings:ConnectionString=mongodb://catalogdb:27017"
+    depends_on:
+      - discount.grpc
+    ports:
+      - "8081:80"

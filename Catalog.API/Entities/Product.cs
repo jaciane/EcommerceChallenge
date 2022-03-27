@@ -20,7 +20,7 @@ namespace Catalog.API.Entities
         public string ? Description { get; set; }
         
         [BsonElement("amount")]
-        public double Amount { get; set; }
+        public decimal Amount { get; set; }
 
         [BsonElement("is_gift")]
         public bool Is_gift { get; set; }

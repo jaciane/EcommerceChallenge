@@ -27,6 +27,26 @@ services:
     networks:
       - dev
 
+  basket.api:
+    image: ${DOCKER_REGISTRY-}basketapi
+    container_name: basket.api
+    build:
+      context: .
+      dockerfile: Basket.API/Dockerfile
+    networks:
+      - dev
+
+  discount.grpc:
+    image: hashorg/hash-mock-discount-service
+    ports:
+         - "50051:50051"
+    container_name: discount.grpc
+    #build: ./Basket.API/Grpc
+    #links:
+    #  - basket.api
+    networks:
+      - dev
+
 networks:
    dev:
      name: dev

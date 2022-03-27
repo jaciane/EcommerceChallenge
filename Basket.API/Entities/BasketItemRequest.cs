@@ -8,6 +8,6 @@ namespace Basket.API.Entities
         public int ProductId { get; set; }
 
         [Display(Name = "quantity")]
-        public decimal Quantity { get; set; }
+        public int Quantity { get; set; }
     }
 }
