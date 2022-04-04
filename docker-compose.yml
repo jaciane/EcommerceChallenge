@@ -3,7 +3,8 @@ version: '3.4'
 
 services:
   catalogdb:
-    image: mongo
+    image: mongo:latest
+    restart: always
     ports:
          - "27017:27017"
     container_name: catalogdb
@@ -11,6 +12,7 @@ services:
       - dev
 
   mongo_seed:
+    image: ${DOCKER_REGISTRY-}catalogdb
     container_name: mongo-seed
     build: ./Catalog.API/mongo-seed
     links:
@@ -18,12 +20,12 @@ services:
     networks:
       - dev
 
-  catalog.api:
-    image: ${DOCKER_REGISTRY-}catalogapi
-    container_name: catalog.api
+  catalog.grpc:
+    image: ${DOCKER_REGISTRY-}cataloggrpc
+    container_name: catalog.grpc
     build:
       context: .
-      dockerfile: Catalog.API/Dockerfile
+      dockerfile: Catalog.GRPC/Dockerfile
     networks:
       - dev
 
@@ -41,9 +43,6 @@ services:
     ports:
          - "50051:50051"
     container_name: discount.grpc
-    #build: ./Basket.API/Grpc
-    #links:
-    #  - basket.api
     networks:
       - dev
 

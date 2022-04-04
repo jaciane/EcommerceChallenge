@@ -3,21 +3,25 @@
     "Docker Compose": {
       "commandName": "DockerCompose",
       "composeLaunchAction": "LaunchBrowser",
-      "composeLaunchServiceName": "catalog.api",
+      "composeLaunchServiceName": "basket.api",
       "composeLaunchUrl": "{Scheme}://localhost:{ServicePort}/swagger",
       "commandVersion": "1.0",
       "serviceActions": {
-        "catalog.api": "StartDebugging",
+        "basket.api": "StartDebugging",
         "catalogdb": "StartWithoutDebugging",
-        "mongo_seed": "StartWithoutDebugging"
+        "mongo_seed": "StartWithoutDebugging",
+        "catalog.grpc": "StartDebugging",
+        "discount.grpc": "StartWithoutDebugging"
       }
     },
-    "Docker Compose II": {
+    "starting": {
       "commandName": "DockerCompose",
       "commandVersion": "1.0",
       "serviceActions": {
-        "catalog.api": "StartDebugging",
+        "basket.api": "StartDebugging",
+        "catalog.grpc": "StartDebugging",
         "catalogdb": "StartWithoutDebugging",
+        "discount.grpc": "StartWithoutDebugging",
         "mongo_seed": "StartWithoutDebugging"
       }
     }

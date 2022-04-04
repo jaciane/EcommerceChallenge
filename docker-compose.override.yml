@@ -2,21 +2,22 @@ version: '3.4'
 
 services:
   
-  catalog.api:
+  catalog.grpc:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      #- "DatabaseSettings:ConnectionString=mongodb://localhost:27017"
       - "DatabaseSettings:ConnectionString=mongodb://catalogdb:27017"
     depends_on:
       - catalogdb
     ports:
-      - "8080:80"
+      - "50052:80"
 
   basket.api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      #- "DatabaseSettings:ConnectionString=mongodb://catalogdb:27017"
+      - "GrpcSettings:DiscountURL=http://discount.grpc:50051"
+      - "GrpcCatalogSettings:CatalogURL=http://catalog.grpc:50052"
     depends_on:
       - discount.grpc
+      - catalog.grpc
     ports:
       - "8081:80"
