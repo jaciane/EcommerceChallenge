@@ -20,14 +20,14 @@ services:
     networks:
       - dev
 
-  catalog.grpc:
-    image: ${DOCKER_REGISTRY-}cataloggrpc
-    container_name: catalog.grpc
-    build:
-      context: .
-      dockerfile: Catalog.GRPC/Dockerfile
-    networks:
-      - dev
+  #catalog.grpc:
+  #  image: ${DOCKER_REGISTRY-}cataloggrpc
+  #  container_name: catalog.grpc
+  #  build:
+  #    context: .
+  #    dockerfile: Catalog.GRPC/Dockerfile
+  #  networks:
+  #    - dev
 
   basket.api:
     image: ${DOCKER_REGISTRY-}basketapi
