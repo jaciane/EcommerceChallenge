@@ -1,17 +1,25 @@
-﻿using Basket.API.Entities;
+﻿using AutoMapper;
+using Basket.API.Entities;
 using Basket.API.Interfaces;
+using Basket.API.Protos;
+using Google.Protobuf.WellKnownTypes;
+
 
 namespace Basket.API.Services
 {
     public class BasketService : IBasketService
     {
-        private readonly Discount.Discount.DiscountClient _discountClient;
-        private DateTime _blackFriday = Convert.ToDateTime("25/11/2022");
+        private readonly Discount.DiscountClient _discountClient;
+        private readonly Protos.Products.ProductsClient _productsClient;
+        //private readonly IMapper _mapper;
+        private DateTime _blackFriday = DateTime.ParseExact("02/04/2022", "dd/MM/yyyy", null);//TODO 25/11/2022
         private BasketCheckout basketCheckout { get; set; } = new();
 
-        public BasketService(Discount.Discount.DiscountClient discountClient)
+        public BasketService(Discount.DiscountClient discountClient, Protos.Products.ProductsClient productsClient/*, IMapper mapper*/)
         {
             _discountClient = discountClient;
+            _productsClient = productsClient;
+            //_mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         /// <summary>
@@ -22,18 +30,21 @@ namespace Basket.API.Services
         /// <exception cref="Exception"></exception>
         public async Task<BasketCheckout> GetBasketAsync(List<BasketItemRequest> ItemsRequest)
         {
-            if(ItemsRequest == null)
+            //var x = await _discountClient.GetDiscountAsync(new Discount.GetDiscountRequest { ProductID = 2 });
+            if (ItemsRequest == null)
                 throw new ArgumentNullException(nameof(ItemsRequest));
 
             decimal totalAmount = 0;
             decimal totalDiscount = 0;
-            List<Products> products = new List<Products>(); //TODO: change
-            List<BasketItem> BasketItems = new List<BasketItem>();
+            List<Basket.API.Entities.Products> products = await GetProductsAsync();
+
+            var giftsProducts = products.Select(p => p).Where(p => p.Is_gift == true).ToList();
+            products = products.Select(p => p).Where(p => p.Is_gift == false).ToList();
 
             foreach (var item in ItemsRequest)
             {
                 if (!IsMatch(products, item.ProductId))
-                    throw new Exception("Produto não existe!"); //TODO: tratar isso
+                    throw new Exception("Produto inválido!"); //TODO: tratar isso
 
                 var discount = await GetDiscountAsync(item.ProductId);
 
@@ -55,11 +66,22 @@ namespace Basket.API.Services
             basketCheckout.TotalDiscount = totalDiscount;
             basketCheckout.TotalAmountWithDiscount = basketCheckout.TotalAmount - basketCheckout.TotalDiscount;
             
-            //Add the gift
+            //If black friday, add the gift
             if (IsBlackFriday() && !ContainsGift(basketCheckout.Products))
-                AddGift(GetBasketItemGift(products.Select(p => p).Where(p => p.Is_gift == true).FirstOrDefault()));
+                AddGift(GetBasketItemGift(giftsProducts?.FirstOrDefault()));
 
             return basketCheckout;
+        }
+
+        /// <summary>
+        /// Get all products of catalog
+        /// </summary>
+        /// <returns>Product list</returns>
+        private async Task<List<Basket.API.Entities.Products>> GetProductsAsync()
+        {
+            var productResponse = await _productsClient.GetProductsAsync(new Empty());
+            //return _mapper.Map<List<Basket.API.Entities.Products>>(productResponse);
+            return null;
         }
 
         /// <summary>
@@ -67,7 +89,7 @@ namespace Basket.API.Services
         /// </summary>
         /// <param name="product">A product which is gift</param>
         /// <returns>Gift item</returns>
-        private BasketItem GetBasketItemGift(Products product)
+        private BasketItem GetBasketItemGift(Basket.API.Entities.Products product)
         {
             BasketItem basketItem = new BasketItem();
             basketItem.IdProduct = product.IdProduct;
@@ -89,7 +111,7 @@ namespace Basket.API.Services
         {
             try
             {
-                Discount.GetDiscountResponse discount = await _discountClient.GetDiscountAsync(new Discount.GetDiscountRequest { ProductID = producId });
+                var discount = await _discountClient.GetDiscountAsync(new GetDiscountRequest { ProductID = producId });
 
                 return (decimal)discount.Percentage;
             }
@@ -105,7 +127,7 @@ namespace Basket.API.Services
         /// <param name="products">Products list of database</param>
         /// <param name="productId">Identifier of product to check</param>
         /// <returns>True or false</returns>
-        private bool IsMatch(IEnumerable<Products> products, int productId)
+        private bool IsMatch(IEnumerable<Basket.API.Entities.Products> products, int productId)
         {
             return products.Any(p => p.IdProduct == productId);
         }

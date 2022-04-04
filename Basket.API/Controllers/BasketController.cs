@@ -1,20 +1,35 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Basket.API.Interfaces;
 using Basket.API.Entities;
+using MassTransit;
 
 namespace Basket.API.Controllers
 {
-    public class BasketController : Controller
+    [Route("api/v1/[controller]")]
+    [ApiController]
+    public class BasketController : ControllerBase
     {
         protected readonly IBasketService _basketService;
+       
         public BasketController(IBasketService basketService)
         {
             _basketService = basketService;
+           
         }
 
-        public async Task<BasketCheckout> Checkout(BasketCheckoutRequest request)
+        [HttpGet]
+        public IActionResult Test()
         {
-            return await _basketService.GetBasketAsync(request.Products);
+            return Ok(new { Something = "A" });
         }
+
+        [HttpPost]
+        [ProducesResponseType(typeof(BasketCheckout), StatusCodes.Status200OK)]
+        public async Task<ActionResult<BasketCheckout>> Checkout(BasketCheckoutRequest request)
+        {
+            return Ok( await _basketService.GetBasketAsync(request.Products));
+        }
+
+
     }
 }

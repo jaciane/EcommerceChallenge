@@ -1,5 +1,6 @@
 syntax = "proto3";
 
+option csharp_namespace = " Basket.API.Protos";
 package discount;
 
 // Service that return mocked discount percentage.

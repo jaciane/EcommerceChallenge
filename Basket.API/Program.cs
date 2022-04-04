@@ -1,3 +1,8 @@
+using Basket.API.Interfaces;
+using Basket.API.Mapper;
+using Basket.API.Protos;
+using Basket.API.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -7,10 +12,21 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddStackExchangeRedisCache(options => {
-    options.Configuration = builder.Configuration.GetValue<string>("CacheSettings:ConnectionString");
-});
-//builder.Services.AddDistributedMemoryCache( );
+#region GRPC configurations
+builder.Services.AddScoped<IBasketService, BasketService>();
+
+//gRPC Discount
+builder.Services.AddGrpcClient<Discount.DiscountClient>(options=>
+        options.Address = new Uri(builder.Configuration.GetValue<string>("GrpcSettings:DiscountURL")));
+
+//gRPC Catalog
+builder.Services.AddGrpcClient<Products.ProductsClient>(options =>
+        options.Address = new Uri(builder.Configuration.GetValue<string>("GrpcCatalogSettings:CatalogURL")));
+
+//builder.Services.AddAutoMapper(typeof(Map));
+#endregion
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
