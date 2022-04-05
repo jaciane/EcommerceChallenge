@@ -24,8 +24,8 @@ namespace Basket.API.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(BasketCheckout), StatusCodes.Status200OK)]
-        public async Task<ActionResult<BasketCheckout>> Checkout(BasketCheckoutRequest request)
+        [ProducesResponseType(typeof(BasketCheckoutResponse), StatusCodes.Status200OK)]
+        public async Task<ActionResult<BasketCheckoutResponse>> Checkout(BasketCheckoutRequest request)
         {
             return Ok( await _basketService.GetBasketAsync(request.Products));
         }

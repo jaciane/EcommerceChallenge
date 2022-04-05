@@ -3,7 +3,7 @@ import "google/protobuf/empty.proto";
 
 option csharp_namespace = " Basket.API.Protos";
 
-package products;
+package Products;
 
 
 service Products {

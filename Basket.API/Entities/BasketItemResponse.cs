@@ -2,7 +2,7 @@
 
 namespace Basket.API.Entities
 {
-    public class BasketItem
+    public class BasketItemResponse
     {
         [Display(Name = "id")]
         public int IdProduct { get; set; }

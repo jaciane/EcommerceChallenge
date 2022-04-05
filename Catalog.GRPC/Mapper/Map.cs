@@ -14,6 +14,7 @@ namespace Catalog.GRPC.Mapper
               .ReverseMap();
             CreateMap<Protos.Product, Entities.Product>()
              .ForMember(dest => dest.IdProduct, opt => opt.MapFrom(src => src.Id))
+             .ForMember(dest => dest.Is_gift, opt => opt.MapFrom(src => src.IsGift))
              .ForMember(dest => dest.Id, opt => opt.Ignore())
              .ReverseMap();
             CreateMap(typeof(IEnumerable<>), typeof(RepeatedField<>)).ConvertUsing(typeof(EnumerableToRepeatedFieldTypeConverter<,>));

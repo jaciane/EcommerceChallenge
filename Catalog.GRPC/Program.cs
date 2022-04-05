@@ -17,12 +17,17 @@ builder.Services.AddGrpc();
 builder.Services.AddScoped<ICatalogContext, CatalogContext>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddAutoMapper(typeof(Map));
+//builder.Services.AddCors(options => {
+//    options.AddPolicy("cors", policy => {
+//        policy.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin().WithExposedHeaders("Grpc-Status", "Grpc-Message", "Grpc-Encoding", "Grpc-Accept-Encoding");
+//    });
+//});
 
 #endregion
 
 
 var app = builder.Build();
-
+app.Urls.Add("http://catalog.grpc:50052");
 // Configure the HTTP request pipeline.
 app.MapGrpcService<ProductsService>();
 app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");

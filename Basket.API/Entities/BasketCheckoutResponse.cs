@@ -3,7 +3,7 @@ using Basket.API.Interfaces;
 
 namespace Basket.API.Entities
 {
-    public class BasketCheckout
+    public class BasketCheckoutResponse
     {
         [Display(Name = "total_amount")]
         public decimal TotalAmount { get; set; }
@@ -15,7 +15,7 @@ namespace Basket.API.Entities
         public decimal TotalDiscount { get; set; }
 
         [Display(Name = "products")]
-        public List<BasketItem> Products { get; set; } = new();
+        public List<BasketItemResponse> Products { get; set; } = new();
 
 
     }

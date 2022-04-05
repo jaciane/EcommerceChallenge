@@ -10,16 +10,16 @@ namespace Basket.API.Services
     public class BasketService : IBasketService
     {
         private readonly Discount.DiscountClient _discountClient;
-        private readonly Protos.Products.ProductsClient _productsClient;
-        //private readonly IMapper _mapper;
-        private DateTime _blackFriday = DateTime.ParseExact("02/04/2022", "dd/MM/yyyy", null);//TODO 25/11/2022
-        private BasketCheckout basketCheckout { get; set; } = new();
+        private readonly Products.ProductsClient _productsClient;
+        private readonly IMapper _mapper;
+        private DateTime _blackFriday = DateTime.ParseExact("05/04/2022", "dd/MM/yyyy", null);//TODO 25/11/2022
+        private BasketCheckoutResponse basketCheckout { get; set; } = new();
 
-        public BasketService(Discount.DiscountClient discountClient, Protos.Products.ProductsClient productsClient/*, IMapper mapper*/)
+        public BasketService(Discount.DiscountClient discountClient, Products.ProductsClient productsClient, IMapper mapper)
         {
-            _discountClient = discountClient;
-            _productsClient = productsClient;
-            //_mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _discountClient = discountClient ?? throw new ArgumentNullException(nameof(discountClient));
+            _productsClient = productsClient ?? throw new ArgumentNullException(nameof(productsClient));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         /// <summary>
@@ -28,16 +28,15 @@ namespace Basket.API.Services
         /// <param name="ItemsRequest">Basket items request</param>
         /// <returns>Basket</returns>
         /// <exception cref="Exception"></exception>
-        public async Task<BasketCheckout> GetBasketAsync(List<BasketItemRequest> ItemsRequest)
+        public async Task<BasketCheckoutResponse> GetBasketAsync(List<BasketItemRequest> ItemsRequest)
         {
-            //var x = await _discountClient.GetDiscountAsync(new Discount.GetDiscountRequest { ProductID = 2 });
             if (ItemsRequest == null)
                 throw new ArgumentNullException(nameof(ItemsRequest));
 
             decimal totalAmount = 0;
             decimal totalDiscount = 0;
-            List<Basket.API.Entities.Products> products = await GetProductsAsync();
 
+            IEnumerable<Basket.API.Entities.Product> products = await GetProductsAsync();
             var giftsProducts = products.Select(p => p).Where(p => p.Is_gift == true).ToList();
             products = products.Select(p => p).Where(p => p.Is_gift == false).ToList();
 
@@ -48,7 +47,7 @@ namespace Basket.API.Services
 
                 var discount = await GetDiscountAsync(item.ProductId);
 
-                BasketItem basketItem = new BasketItem();
+                BasketItemResponse basketItem = new BasketItemResponse();
                 basketItem.IdProduct = item.ProductId;
                 basketItem.Quantity = item.Quantity;
                 var product = products.Select(p => p).Where(p => p.IdProduct == item.ProductId).FirstOrDefault();
@@ -58,16 +57,16 @@ namespace Basket.API.Services
                 basketItem.IsGift = product.Is_gift;
 
                 totalDiscount += basketItem.TotalDiscountProduct;
-                totalAmount += basketItem.Amount;
+                totalAmount += basketItem.TotalAmountProduct;
                 basketCheckout.Products.Add(basketItem);
             }
 
             basketCheckout.TotalAmount = totalAmount;
             basketCheckout.TotalDiscount = totalDiscount;
-            basketCheckout.TotalAmountWithDiscount = basketCheckout.TotalAmount - basketCheckout.TotalDiscount;
+            basketCheckout.TotalAmountWithDiscount = totalAmount - totalDiscount;
             
             //If black friday, add the gift
-            if (IsBlackFriday() && !ContainsGift(basketCheckout.Products))
+            if (IsBlackFriday() && !ContainsGift(basketCheckout.Products) && giftsProducts.Count>0)
                 AddGift(GetBasketItemGift(giftsProducts?.FirstOrDefault()));
 
             return basketCheckout;
@@ -77,11 +76,11 @@ namespace Basket.API.Services
         /// Get all products of catalog
         /// </summary>
         /// <returns>Product list</returns>
-        private async Task<List<Basket.API.Entities.Products>> GetProductsAsync()
+        private async Task<IEnumerable<Entities.Product>> GetProductsAsync()
         {
-            var productResponse = await _productsClient.GetProductsAsync(new Empty());
-            //return _mapper.Map<List<Basket.API.Entities.Products>>(productResponse);
-            return null;
+            var getProductResponse = await _productsClient.GetProductsAsync(new Google.Protobuf.WellKnownTypes.Empty(), null);
+            var productResponse = _mapper.Map<ProductsResponse>(getProductResponse);
+            return productResponse.Products;
         }
 
         /// <summary>
@@ -89,9 +88,9 @@ namespace Basket.API.Services
         /// </summary>
         /// <param name="product">A product which is gift</param>
         /// <returns>Gift item</returns>
-        private BasketItem GetBasketItemGift(Basket.API.Entities.Products product)
+        private BasketItemResponse GetBasketItemGift(Basket.API.Entities.Product product)
         {
-            BasketItem basketItem = new BasketItem();
+            BasketItemResponse basketItem = new BasketItemResponse();
             basketItem.IdProduct = product.IdProduct;
             basketItem.Quantity = 1;
             basketItem.Amount = 0;
@@ -127,7 +126,7 @@ namespace Basket.API.Services
         /// <param name="products">Products list of database</param>
         /// <param name="productId">Identifier of product to check</param>
         /// <returns>True or false</returns>
-        private bool IsMatch(IEnumerable<Basket.API.Entities.Products> products, int productId)
+        private bool IsMatch(IEnumerable<Basket.API.Entities.Product> products, int productId)
         {
             return products.Any(p => p.IdProduct == productId);
         }
@@ -138,14 +137,14 @@ namespace Basket.API.Services
         /// <returns> True or false</returns>
         private bool IsBlackFriday()
         {
-            return DateTime.Compare(DateTime.Now, _blackFriday) == 0 ? true: false;
+            return DateTime.Compare(DateTime.Now.Date, _blackFriday) == 0 ? true: false;
         }
 
         /// <summary>
         /// Add Gift Item to Basket
         /// </summary>
         /// <param name="gift">Gift Item</param>
-        private void AddGift(BasketItem gift)
+        private void AddGift(BasketItemResponse gift)
         {
             basketCheckout.Products.Add(gift);
         }
@@ -155,7 +154,7 @@ namespace Basket.API.Services
         /// </summary>
         /// <param name="products">BasketItem list</param>
         /// <returns> True ou false</returns>
-        private bool ContainsGift(IEnumerable<BasketItem> products)
+        private bool ContainsGift(IEnumerable<BasketItemResponse> products)
         {
             return products.Any(p => p.IsGift == true);
         }

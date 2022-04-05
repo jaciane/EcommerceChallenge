@@ -23,7 +23,7 @@ builder.Services.AddGrpcClient<Discount.DiscountClient>(options=>
 builder.Services.AddGrpcClient<Products.ProductsClient>(options =>
         options.Address = new Uri(builder.Configuration.GetValue<string>("GrpcCatalogSettings:CatalogURL")));
 
-//builder.Services.AddAutoMapper(typeof(Map));
+builder.Services.AddAutoMapper(typeof(Map));
 #endregion
 
 

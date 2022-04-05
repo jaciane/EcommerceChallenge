@@ -2,6 +2,6 @@
 {
     public class ProductsResponse
     {
-        public IEnumerable<Entities.Product> Products { get; set; }
+        public IEnumerable<Entities.Product> Products { get; set; } = new List<Entities.Product>();
     }
 }

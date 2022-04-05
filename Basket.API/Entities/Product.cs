@@ -1,7 +1,7 @@
 ﻿namespace Basket.API.Entities
 {
     using System.ComponentModel.DataAnnotations;
-    public class Products
+    public class Product
     {
         [Display(Name = "id")]
         public int IdProduct { get; set; }

@@ -3,6 +3,6 @@ namespace Basket.API.Interfaces
 {
     public interface IBasketService
     {
-        Task<BasketCheckout> GetBasketAsync(List<BasketItemRequest> ItemsRequest);
+        Task<BasketCheckoutResponse> GetBasketAsync(List<BasketItemRequest> ItemsRequest);
     }
 }

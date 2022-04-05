@@ -14,7 +14,7 @@ namespace Catalog.GRPC.Repositories
 
         async Task<IEnumerable<Product>> IProductRepository.GetProducts()
         {
-            return await _context.Products.Find(p=>p.Is_gift == false).ToListAsync();
+            return await _context.Products.Find(p=>p.IdProduct>0).ToListAsync();
         }
 
     }
