@@ -5,7 +5,7 @@
 
   <ul>
   <li>Basket.api: Faz interface com clientes. Possui validações e regras de negócio. Comunica-se com os serviços de discount e catalog.</li>
-  <li>Catalog.api: Faz comunicação com banco de dados (MongoDB) para acesso aos dados (lista de produtos)</li>
+  <li>Catalog.grpc: Faz comunicação com banco de dados (MongoDB) para acesso aos dados (lista de produtos)</li>
   <li>Test: Contém alguns testes unitários</li>
   </ul>
   
