@@ -15,7 +15,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - "GrpcSettings:DiscountURL=http://discount.grpc:50051"
-      - "GrpcCatalogSettings:CatalogURL=https://catalog.grpc:50052"
+      - "GrpcCatalogSettings:CatalogURL=http://catalog.grpc:50052"
     depends_on:
       - discount.grpc
       - catalog.grpc

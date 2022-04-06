@@ -13,7 +13,7 @@ namespace Basket.API.Services
         private readonly Discount.DiscountClient _discountClient;
         private readonly Products.ProductsClient _productsClient;
         private readonly IMapper _mapper;
-        private DateTime _blackFriday = DateTime.ParseExact("25/11/2022", "dd/MM/yyyy", CultureInfo.InvariantCulture);
+        private DateTime _blackFriday = DateTime.ParseExact("06/04/2022", "dd/MM/yyyy", CultureInfo.InvariantCulture);
 
 
         private BasketCheckoutResponse basketCheckout { get; set; } = new();
