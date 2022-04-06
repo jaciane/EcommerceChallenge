@@ -17,12 +17,6 @@ builder.Services.AddGrpc();
 builder.Services.AddScoped<ICatalogContext, CatalogContext>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddAutoMapper(typeof(Map));
-//builder.Services.AddCors(options => {
-//    options.AddPolicy("cors", policy => {
-//        policy.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin().WithExposedHeaders("Grpc-Status", "Grpc-Message", "Grpc-Encoding", "Grpc-Accept-Encoding");
-//    });
-//});
-
 #endregion
 
 

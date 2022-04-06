@@ -4,6 +4,7 @@ using Grpc.Core;
 using Catalog.GRPC.Entities;
 using Catalog.GRPC.Interfaces;
 using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Catalog.GRPC.Services
 {
@@ -21,10 +22,17 @@ namespace Catalog.GRPC.Services
 
         public override async Task<GetProductsResponse> GetProducts(global::Google.Protobuf.WellKnownTypes.Empty request, ServerCallContext context)
         {
-            var products = await _repository.GetProducts();
-            var response = _mapper.Map<GetProductsResponse>(new ProductsResponse { Products = products });
+            try
+            {
+                var products = await _repository.GetProducts();
+                var response = _mapper.Map<GetProductsResponse>(new ProductsResponse { Products = products });
+                return response;
 
-            return response;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
         }
 
     }

@@ -5,6 +5,11 @@ using MassTransit;
 
 namespace Basket.API.Controllers
 {
+    [Produces("application/json")]
+    [Consumes("application/json")]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+
     [Route("api/v1/[controller]")]
     [ApiController]
     public class BasketController : ControllerBase
@@ -17,17 +22,19 @@ namespace Basket.API.Controllers
            
         }
 
-        [HttpGet]
-        public IActionResult Test()
-        {
-            return Ok(new { Something = "A" });
-        }
-
         [HttpPost]
         [ProducesResponseType(typeof(BasketCheckoutResponse), StatusCodes.Status200OK)]
         public async Task<ActionResult<BasketCheckoutResponse>> Checkout(BasketCheckoutRequest request)
         {
-            return Ok( await _basketService.GetBasketAsync(request.Products));
+            try
+            {
+                var products = await _basketService.GetProductsAsync();
+                return Ok( await _basketService.GetBasketAsync(request.Products, products));
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
 

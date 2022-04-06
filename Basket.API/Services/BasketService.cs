@@ -3,16 +3,19 @@ using Basket.API.Entities;
 using Basket.API.Interfaces;
 using Basket.API.Protos;
 using Google.Protobuf.WellKnownTypes;
-
+using System.Globalization;
 
 namespace Basket.API.Services
 {
+
     public class BasketService : IBasketService
     {
         private readonly Discount.DiscountClient _discountClient;
         private readonly Products.ProductsClient _productsClient;
         private readonly IMapper _mapper;
-        private DateTime _blackFriday = DateTime.ParseExact("05/04/2022", "dd/MM/yyyy", null);//TODO 25/11/2022
+        private DateTime _blackFriday = DateTime.ParseExact("25/11/2022", "dd/MM/yyyy", CultureInfo.InvariantCulture);
+
+
         private BasketCheckoutResponse basketCheckout { get; set; } = new();
 
         public BasketService(Discount.DiscountClient discountClient, Products.ProductsClient productsClient, IMapper mapper)
@@ -28,22 +31,23 @@ namespace Basket.API.Services
         /// <param name="ItemsRequest">Basket items request</param>
         /// <returns>Basket</returns>
         /// <exception cref="Exception"></exception>
-        public async Task<BasketCheckoutResponse> GetBasketAsync(List<BasketItemRequest> ItemsRequest)
+        public async Task<BasketCheckoutResponse> GetBasketAsync(List<BasketItemRequest> ItemsRequest, IEnumerable<Entities.Product> productList)
         {
+
             if (ItemsRequest == null)
                 throw new ArgumentNullException(nameof(ItemsRequest));
 
             decimal totalAmount = 0;
             decimal totalDiscount = 0;
 
-            IEnumerable<Basket.API.Entities.Product> products = await GetProductsAsync();
+            IEnumerable<Basket.API.Entities.Product> products = productList; // await GetProductsAsync();
             var giftsProducts = products.Select(p => p).Where(p => p.Is_gift == true).ToList();
             products = products.Select(p => p).Where(p => p.Is_gift == false).ToList();
 
             foreach (var item in ItemsRequest)
             {
                 if (!IsMatch(products, item.ProductId))
-                    throw new Exception("Produto inválido!"); //TODO: tratar isso
+                    throw new Exception("Produto inválido!");
 
                 var discount = await GetDiscountAsync(item.ProductId);
 
@@ -66,7 +70,7 @@ namespace Basket.API.Services
             basketCheckout.TotalAmountWithDiscount = totalAmount - totalDiscount;
             
             //If black friday, add the gift
-            if (IsBlackFriday() && !ContainsGift(basketCheckout.Products) && giftsProducts.Count>0)
+            if (IsBlackFriday(_blackFriday) && !ContainsGift(basketCheckout.Products) && giftsProducts.Count>0)
                 AddGift(GetBasketItemGift(giftsProducts?.FirstOrDefault()));
 
             return basketCheckout;
@@ -76,11 +80,18 @@ namespace Basket.API.Services
         /// Get all products of catalog
         /// </summary>
         /// <returns>Product list</returns>
-        private async Task<IEnumerable<Entities.Product>> GetProductsAsync()
+        public async Task<IEnumerable<Entities.Product>> GetProductsAsync()
         {
-            var getProductResponse = await _productsClient.GetProductsAsync(new Google.Protobuf.WellKnownTypes.Empty(), null);
-            var productResponse = _mapper.Map<ProductsResponse>(getProductResponse);
-            return productResponse.Products;
+            try
+            {
+                var getProductResponse = await _productsClient.GetProductsAsync(new Google.Protobuf.WellKnownTypes.Empty(), null);
+                var productResponse = _mapper.Map<ProductsResponse>(getProductResponse);
+                return productResponse.Products;
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
         }
 
         /// <summary>
@@ -111,7 +122,6 @@ namespace Basket.API.Services
             try
             {
                 var discount = await _discountClient.GetDiscountAsync(new GetDiscountRequest { ProductID = producId });
-
                 return (decimal)discount.Percentage;
             }
             catch (Exception)
@@ -126,7 +136,7 @@ namespace Basket.API.Services
         /// <param name="products">Products list of database</param>
         /// <param name="productId">Identifier of product to check</param>
         /// <returns>True or false</returns>
-        private bool IsMatch(IEnumerable<Basket.API.Entities.Product> products, int productId)
+        public bool IsMatch(IEnumerable<Basket.API.Entities.Product> products, int productId)
         {
             return products.Any(p => p.IdProduct == productId);
         }
@@ -135,9 +145,9 @@ namespace Basket.API.Services
         /// Check if current day is black friday
         /// </summary>
         /// <returns> True or false</returns>
-        private bool IsBlackFriday()
+        public bool IsBlackFriday(DateTime blackFriday)
         {
-            return DateTime.Compare(DateTime.Now.Date, _blackFriday) == 0 ? true: false;
+            return DateTime.Compare(DateTime.Now.Date, blackFriday) == 0 ? true: false;
         }
 
         /// <summary>
@@ -158,6 +168,7 @@ namespace Basket.API.Services
         {
             return products.Any(p => p.IsGift == true);
         }
+
 
     }
 }
