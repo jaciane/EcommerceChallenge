@@ -1,4 +1,4 @@
-<b>Hash Code Challenge</b>
+<b>Code Challenge</b>
 <p>Para esse POC buscou-se utilizar simplicidade e boas práticas de desenvolvimento de software (SOLID) em uma solução baseada em arquitetura de microserviço.</p>
 <p>O ambiente de hospedagem é composto por contêineres implantados em um único host do Docker.</p>
 <p>A solução é composta por 3 projetos:
